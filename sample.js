@@ -1,6 +1,43 @@
 const { MongoClient } = require('mongodb')
 const url = 'mongodb://127.0.0.1:27017'
 
+
+
+
+
+
+
+// const sampleFun = () => {
+//     return new Promise(async (resolve, reject) => {
+//         const client = await MongoClient.connect(url)
+//         const db = client.db('sample');
+//         const studentCollection = db.collection('student');
+//         const markCollection = db.collection('mark');
+//         const aggregationPipeline = [
+//            {
+//                 $lookup:{
+//                     from:'mark',
+//                     localField:'rollNo',
+//                     foreignField:'RegisterNumber',
+//                     as:'markList'
+//                 }
+//             }
+            
+//         ];
+//         const doc = await studentCollection.aggregate(aggregationPipeline).toArray()
+//         resolve(doc)
+//     })
+// }
+// sampleFun({
+   
+// }).then((response) => {
+//     console.log(response);
+// })
+
+
+
+
+
 // const addToCart = (userId,proId) => {
 //     return new Promise(async (resolve, reject) =>{
 //         const client = await MongoClient.connect(url)
