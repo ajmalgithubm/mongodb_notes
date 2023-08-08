@@ -5,17 +5,16 @@ const url = 'mongodb://127.0.0.1:27017'
 const sampleFun = ()=>{
     return new Promise(async (resolve, reject) => {
         const client = await MongoClient.connect(url);
-        const studentCollection = client.db('sample').collection('test')
+        const studentCollection = client.db('sample').collection('mark')
         const aggregationPipeline = [
             {
                 $group: {
-                    _id:"totalProduct",
-                    product:{
-                        $push:'$name'
-                    },
-                    totalQuantity:{
-                        $sum:'$quantity'
+                    _id:"studentMark",
+                   avMark:{
+                    $push:{
+                           $avg:'$mark'
                     }
+                   }
                 }
             }
         ]
