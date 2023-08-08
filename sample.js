@@ -5,22 +5,35 @@ const url = 'mongodb://127.0.0.1:27017'
 const sampleFun = ()=>{
     return new Promise(async (resolve, reject) => {
         const client = await MongoClient.connect(url);
-        const studentCollection = client.db('sample').collection('mark')
+        const studentCollection = client.db('sample').collection('new')
         const aggregationPipeline = [
             {
-                $group: {
-                    _id:"studentMark",
-                   avMark:{
-                    $push:{
-                           $avg:'$mark'
-                    }
-                   }
+                $match:{
+                    userId:1
                 }
-            }
+            },{
+                $unwind:"$productList"
+            },
+            {
+                $lookup:{
+                    from:'product',
+                    localField:'productList.proId',
+                    foreignField:'name',
+                    as:'productDetails'
+                }
+             }//{
+            //     $group:{
+            //         _id:'productItems',
+            //         productList:{
+            //             $push:'$productDetails'
+            //         }
+                    
+            //     }
+            // }
         ]
         const response = await studentCollection.aggregate(aggregationPipeline).toArray()
         client.close()
-        resolve(response)
+        resolve(response[1].productDetails[0])
     })
 }
 sampleFun().then((result) => {
