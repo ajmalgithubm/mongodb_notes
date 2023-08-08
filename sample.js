@@ -1,8 +1,32 @@
-const { MongoClient } = require('mongodb')
+const { MongoClient } = require('mongodb');
+
 const url = 'mongodb://127.0.0.1:27017'
 
-
-
+const sampleFun = ()=>{
+    return new Promise(async (resolve, reject) => {
+        const client = await MongoClient.connect(url);
+        const studentCollection = client.db('sample').collection('test')
+        const aggregationPipeline = [
+            {
+                $group: {
+                    _id:"totalProduct",
+                    product:{
+                        $push:'$name'
+                    },
+                    totalQuantity:{
+                        $sum:'$quantity'
+                    }
+                }
+            }
+        ]
+        const response = await studentCollection.aggregate(aggregationPipeline).toArray()
+        client.close()
+        resolve(response)
+    })
+}
+sampleFun().then((result) => {
+    console.log(result);
+})
 
 
 
