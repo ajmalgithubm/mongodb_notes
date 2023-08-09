@@ -30,6 +30,16 @@ const sampleFun = ()=>{
                     foreignField:'_id',
                     as:'productDetails'
                 }
+            },{
+                $unwind:'$productDetails'
+            },{
+                $set:{
+                    name:'$productDetails.name'
+                }
+            },{
+                $project:{
+                    productDetails:0
+                }
             }
         ]).toArray()
         client.close()
@@ -37,7 +47,7 @@ const sampleFun = ()=>{
     })
 }
 sampleFun().then((result) => {
-    console.log(result[0].productDetails[0]);
+    console.log(result);
 })
 
 
