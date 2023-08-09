@@ -8,25 +8,43 @@ const sampleFun = ()=>{
         const doc = await client.db('sample').collection('test').aggregate([
             {
                 $match:{
-                    category:'food'
-                }
-            },{
-                $group:{
-                    _id:'foodProducts',
-                    totalQuantity:{
-                        $sum:'$quantity'
-                    },
-                    name:{
-                        $push:'$name'
+                    category:{
+                        $in:['food', 'electronics']
                     }
                 }
             },{
-                $project:{
-                    totalQuantity:1,
+                    $group:{
+                        _id:'$category',
+                        name:{
+                            $push:'$name'
+                        },
+                        totalQuantity:{
+                            $sum:'$quantity'
+                        }
+                    }
+                
+            },{
+                $set:{
                     totalProduct:{
                         $size:'$name'
                     }
                 }
+            },{
+                $match:{
+                    _id:'food'
+                }
+            },{
+                $unwind:'$name'
+            },{
+                $group:{
+                    _id:'$_id',
+                    name:{
+                        $push:'$name'
+                    }
+
+                }
+            },{
+                $unwind:'$name'
             }
         ]).toArray()
         client.close()
