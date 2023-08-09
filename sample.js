@@ -1,39 +1,36 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 const url = 'mongodb://127.0.0.1:27017'
 
 const sampleFun = ()=>{
     return new Promise(async (resolve, reject) => {
         const client = await MongoClient.connect(url);
-        const studentCollection = client.db('sample').collection('new')
-        const aggregationPipeline = [
+        const doc = await client.db('sample').collection('test').aggregate([
             {
                 $match:{
-                    userId:1
+                    category:'food'
                 }
             },{
-                $unwind:"$productList"
-            },
-            {
-                $lookup:{
-                    from:'product',
-                    localField:'productList.proId',
-                    foreignField:'name',
-                    as:'productDetails'
+                $group:{
+                    _id:'foodProducts',
+                    totalQuantity:{
+                        $sum:'$quantity'
+                    },
+                    name:{
+                        $push:'$name'
+                    }
                 }
-             }//{
-            //     $group:{
-            //         _id:'productItems',
-            //         productList:{
-            //             $push:'$productDetails'
-            //         }
-                    
-            //     }
-            // }
-        ]
-        const response = await studentCollection.aggregate(aggregationPipeline).toArray()
+            },{
+                $project:{
+                    totalQuantity:1,
+                    totalProduct:{
+                        $size:'$name'
+                    }
+                }
+            }
+        ]).toArray()
         client.close()
-        resolve(response[1].productDetails[0])
+        resolve(doc)
     })
 }
 sampleFun().then((result) => {
