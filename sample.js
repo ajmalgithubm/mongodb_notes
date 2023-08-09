@@ -5,46 +5,31 @@ const url = 'mongodb://127.0.0.1:27017'
 const sampleFun = ()=>{
     return new Promise(async (resolve, reject) => {
         const client = await MongoClient.connect(url);
-        const doc = await client.db('sample').collection('test').aggregate([
+        const doc = await client.db('shopping').collection('cart').aggregate([
             {
                 $match:{
-                    category:{
-                        $in:['food', 'electronics']
-                    }
+                    userId:'64d083728ac351ff5fb7e10f'
                 }
             },{
-                    $group:{
-                        _id:'$category',
-                        name:{
-                            $push:'$name'
-                        },
-                        totalQuantity:{
-                            $sum:'$quantity'
-                        }
-                    }
-                
+                $unwind:'$productList'
             },{
                 $set:{
-                    totalProduct:{
-                        $size:'$name'
-                    }
+                    quantity:'$productList.quantity',
+                    proId:'$productList.proId'
                 }
             },{
-                $match:{
-                    _id:'food'
+                $project:{
+                    
+                    productList:0,
+                    
                 }
             },{
-                $unwind:'$name'
-            },{
-                $group:{
-                    _id:'$_id',
-                    name:{
-                        $push:'$name'
-                    }
-
+                $lookup:{
+                    from:'product',
+                    localField:'proId',
+                    foreignField:'_id',
+                    as:'productDetails'
                 }
-            },{
-                $unwind:'$name'
             }
         ]).toArray()
         client.close()
@@ -52,7 +37,7 @@ const sampleFun = ()=>{
     })
 }
 sampleFun().then((result) => {
-    console.log(result);
+    console.log(result[0].productDetails[0]);
 })
 
 
